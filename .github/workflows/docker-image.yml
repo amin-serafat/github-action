@@ -29,7 +29,6 @@ jobs:
   Build_Job:
     needs: Test_Job
     runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v') == true
     steps:
 
       - id: Clone_Repository
@@ -40,4 +39,3 @@ jobs:
           echo "--- Build image ---"
           docker build . --file Dockerfile --tag my-image-name:$(date +%s)
 
-          
