@@ -1,7 +1,7 @@
 name: ci
 
 env:
-  IMAGE_NAME: "alehmudrak/github-action:0.2"
+  IMAGE_NAME: "alehmudrak/github-action:branch-hashcommit"
 
 on:
   push:
@@ -18,6 +18,13 @@ jobs:
 # Test NPM
       - id: Clone_Repository
         uses: actions/checkout@v2
+
+      - name: Export Version
+        id: Export_Version
+        run: |
+          COMMIT=$(git log -1 --pretty=tformat:%h)
+          BRANCH=$(git branch --show-current)
+          echo "$BRANCH-$COMMIT"
   
       - name: Install dependencies
         id: Installing_NPM_Dependencies
@@ -38,7 +45,7 @@ jobs:
           docker build . --file Dockerfile --tag $IMAGE_NAME
 
 # Build and push
-  myCD:
+  Deploy:
     needs: myCI
     runs-on: ubuntu-latest
     steps:
