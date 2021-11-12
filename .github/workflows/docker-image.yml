@@ -1,5 +1,8 @@
 name: ci
 
+env:
+  IMAGE_NAME: alehmudrak/github-action:0.2
+
 on:
   push:
     branches:
@@ -31,11 +34,25 @@ jobs:
       - name: Build the Docker image
         run: |    
           echo "--- Build image ---"
-          docker build . --file Dockerfile --tag alehmudrak/github-action:0.1
+          docker build . --file Dockerfile --tag ${{ IMAGE_NAME }}
+
+  myCD:
+    needs: Test_Job
+    runs-on: ubuntu-latest
+    steps:
+      
+      - id: Clone_Repository
+        uses: actions/checkout@v2
+
+# Build image
+      - name: Build the Docker image
+        run: |    
+          echo "--- Build image ---"
+          docker build . --file Dockerfile --tag ${{ IMAGE_NAME }}
 
 # Push in Docker Hub
       - name: Push image
         run: |    
           echo "--- Push image ---"
           docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
-          docker push alehmudrak/github-action:0.1
+          docker push ${{ IMAGE_NAME }}
