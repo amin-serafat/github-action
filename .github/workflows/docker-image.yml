@@ -33,15 +33,9 @@ jobs:
           echo "--- Build image ---"
           docker build . --file Dockerfile --tag my-image-name:$(date +%s)
 
-# Connect to Docker Hub
-      - name: Login to DockerHub
-        uses: docker/login-action@v1
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
 # Push in Docker Hub
       - name: Push image
         run: |    
           echo "--- Push image ---"
+          docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
           docker push ${{ secrets.DOCKERHUB_USERNAME }}/github-action:v1
