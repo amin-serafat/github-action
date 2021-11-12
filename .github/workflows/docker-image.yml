@@ -25,3 +25,19 @@ jobs:
         run: |    
           echo "--- RUNNING UNIT TESTS ---"
           npm test 
+
+  Build_Job:
+    needs: Test_Job
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v') == true
+    steps:
+
+      - id: Clone_Repository
+        uses: actions/checkout@v2
+
+      - name: Build the Docker image
+        run: |    
+          echo "--- Build image ---"
+          docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+
+          
