@@ -10,6 +10,7 @@ on:
 
 jobs:
 
+# Test and build
   myCI:
     runs-on: ubuntu-latest
     steps:
@@ -36,8 +37,9 @@ jobs:
           echo "--- Build image ---"
           docker build . --file Dockerfile --tag ${{ IMAGE_NAME }}
 
+# Build and push
   myCD:
-    needs: Test_Job
+    needs: myCI
     runs-on: ubuntu-latest
     steps:
       
