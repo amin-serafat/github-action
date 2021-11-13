@@ -42,7 +42,7 @@ jobs:
       - name: Build the Docker image
         run: |
           echo "--- Build image ---"
-          echo PROJECT_VERSION = ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
+          echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"        
           IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
           docker build . --file Dockerfile --tag $IMAGE_NAME          
 
@@ -55,15 +55,25 @@ jobs:
       - id: Clone_Repository
         uses: actions/checkout@v2
 
+      - name: Export Version
+        id: Export_Version
+        run: |
+          COMMIT=$(git log -1 --pretty=tformat:%h)
+          BRANCH=$(git branch --show-current)
+          echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$BRANCH-$COMMIT" 
+
 # Build image
       - name: Build the Docker image
         run: |    
           echo "--- Build image ---"
+          echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"
+          IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
           docker build . --file Dockerfile --tag $IMAGE_NAME
 
 # Push in Docker Hub
       - name: Push image
         run: |    
           echo "--- Push image ---"
+          IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
           docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
           docker push $IMAGE_NAME
