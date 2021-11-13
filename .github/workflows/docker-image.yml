@@ -1,7 +1,7 @@
 name: ci
 
 env:
-  IMAGE_NAME: "alehmudrak/github-action:branch-hashcommit"
+  c
 
 on:
   push:
@@ -20,11 +20,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Export Version
-        id: Export_Version
+        id: Branch_Commit
         run: |
           COMMIT=$(git log -1 --pretty=tformat:%h)
           BRANCH=$(git branch --show-current)
           echo "$BRANCH-$COMMIT"
+          export $COMMIT
   
       - name: Install dependencies
         id: Installing_NPM_Dependencies
@@ -43,6 +44,7 @@ jobs:
         run: |
           echo "--- Build image ---"
           docker build . --file Dockerfile --tag $IMAGE_NAME
+          echo "$IMAGE_NAME$BRANCH-$COMMIT"
 
 # Build and push
   Deploy:
