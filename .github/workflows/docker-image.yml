@@ -1,7 +1,7 @@
 name: ci
 
-env:
-  c
+env: 
+  IMAGE_NAME: "alehmudrak/github-action:"
 
 on:
   push:
