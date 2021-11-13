@@ -24,8 +24,7 @@ jobs:
         run: |
           COMMIT=$(git log -1 --pretty=tformat:%h)
           BRANCH=$(git branch --show-current)
-          echo "$BRANCH-$COMMIT"
-          export $COMMIT
+          echo "$BRANCH-$COMMIT"          
   
       - name: Install dependencies
         id: Installing_NPM_Dependencies
