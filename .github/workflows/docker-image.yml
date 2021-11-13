@@ -20,11 +20,12 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Export Version
-        id: Branch_Commit
+        id: Export_Version
         run: |
           COMMIT=$(git log -1 --pretty=tformat:%h)
           BRANCH=$(git branch --show-current)
-          echo "$BRANCH-$COMMIT"          
+          echo "PROJECT_VERSION"
+          echo "$DOCKER_IMAGE$BRANCH-$COMMIT"         
   
       - name: Install dependencies
         id: Installing_NPM_Dependencies
@@ -42,8 +43,8 @@ jobs:
       - name: Build the Docker image
         run: |
           echo "--- Build image ---"
-          echo "$DOCKER_IMAGE$BRANCH-$COMMIT"
-          IMAGE_NAME="$DOCKER_IMAGE$BRANCH-$COMMIT"
+          echo PROJECT_VERSION = ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
+          IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
           docker build . --file Dockerfile --tag $IMAGE_NAME          
 
 # Build and push
