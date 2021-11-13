@@ -34,7 +34,7 @@ jobs:
       
       - name: Run unit tests
         id: Unit_Tests
-        run: |    
+        run: |
           echo "--- RUNNING UNIT TESTS ---"
           npm test 
 
