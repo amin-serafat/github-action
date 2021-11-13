@@ -24,8 +24,7 @@ jobs:
         run: |
           COMMIT=$(git log -1 --pretty=tformat:%h)
           BRANCH=$(git branch --show-current)
-          echo "PROJECT_VERSION"
-          echo "$DOCKER_IMAGE$BRANCH-$COMMIT"         
+          echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$BRANCH-$COMMIT"        
   
       - name: Install dependencies
         id: Installing_NPM_Dependencies
