@@ -35,13 +35,25 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
           path: "github-ci"
 
-      - name: Save Version
-        id: Save_Version
+      # - name: Save Version
+      #   id: Save_Version
+      #   run: |
+      #     ./github-ci/export_version.sh
+      #     sudo mkdir /version/
+      #     sudo mv version.txt /version/
+      #     cat version/version.txt
+
+      - name: Generate Tag Version
+        id: Generate_Tag_Version
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        uses: battila7/get-version-action@v2
+
+      - name: Save Tag Version
+        id: Save_Tag_Version
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: |
-          ./github-ci/export_version.sh
           sudo mkdir /version/
-          sudo mv version.txt /version/
-          cat version/version.txt
+          sudo echo ${{ steps.Generate_Tag_Version.outputs.version-without-v }} > /version/version.txt
 
       - name: Export Version
         id: Export_Version
