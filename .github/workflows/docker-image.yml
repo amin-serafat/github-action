@@ -5,13 +5,13 @@ env:
 
 on:
 
-  create:
-    tag:
-      - v*
+  # create:
+  #   tag:
+  #     - v*
 
-  # push:
-  #   branches:
-  #     - 'main'
+  push:
+    branches:
+      - 'main'
 
 jobs:
 
