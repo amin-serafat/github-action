@@ -65,7 +65,7 @@ jobs:
         run: |
           echo "--- Build image ---"
           echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"        
-          ./baseline-cicd/common/export_version.sh         
+          ./github-ci/common/build.sh         
 
 # Build and push
 #   Deploy:
