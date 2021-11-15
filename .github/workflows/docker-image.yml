@@ -51,7 +51,7 @@ jobs:
       - name: Build the Docker image
         run: |
           echo "--- Build image ---"
-          echo "Project Branch-Hash: ${{  steps.Export_Version.outputs.Export_Branch_Hash  }}"
+          echo "Project Branch-Hash: ${{  steps.Export_Branch_Hash.outputs.PROJECT_VERSION  }}"
           echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"
           IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
          
