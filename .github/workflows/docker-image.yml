@@ -54,6 +54,6 @@ jobs:
           echo "--- Build image ---"
           echo "From file /version/version.txt:"
           cat /version/version.txt
-          IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
+          ./github-ci/build.sh
          
 
