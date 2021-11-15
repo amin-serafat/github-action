@@ -50,7 +50,7 @@ jobs:
         run: |
           LASTTAG=$(git describe --tags --abbrev=0 | sed 's/[^.0-9]*//g')
           echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$LASTTAG"        
-          echo "Project version: $DOCKER_IMAGE$LASTTAG"          
+          echo "Project version: $DOCKER_IMAGE$LASTTAG" > test_ver.txt
 
       - name: Save Tag Version
         id: Save_Tag_Version
@@ -59,12 +59,14 @@ jobs:
           sudo mkdir /version/
           echo ${{ steps.Generate_Tag_Version.outputs.version-without-v }} > version.txt
           sudo mv ./version.txt /version/version.txt
+          echo | cat /version/version.txt
+          echo | cat test_ver.txt
 
       - name: Export Version
         id: Export_Version
         run: |
           echo "::set-output name=PROJECT_VERSION::$(cat /version/version.txt)"
-          cat /version/version.txt
+          echo | cat /version/version.txt
 
 # Test NPM
       - name: Install dependencies
