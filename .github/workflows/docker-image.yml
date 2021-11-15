@@ -45,7 +45,7 @@ jobs:
         run: |
           GITVERSION=$(git describe --tags --abbrev=0 | sed 's/[^.0-9]*//g')
           echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$GITVERSION" 
-        
+       
 
 # Build image
       - name: Build the Docker image
