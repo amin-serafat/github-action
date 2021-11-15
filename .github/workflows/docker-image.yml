@@ -37,9 +37,9 @@ jobs:
       - name: Generate Tag Version
         id: Generate_Tag_Version
         run: |
-          ./github-ci/export_version.sh
-          VERSION=$(sudo cat /version/version.txt)
-          echo "::set-output name=PROJECT_VERSION::$VERSION"
+          ./github-ci/version.sh
+          PROJECT_VERSION=$(sudo cat /version/version.txt)
+          echo "::set-output name=PROJECT_VERSION::$PROJECT_VERSION"
           ls -la .git/
           sudo cat /version/version.txt 
 
