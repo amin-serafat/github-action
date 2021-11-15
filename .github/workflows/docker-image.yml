@@ -18,7 +18,6 @@ jobs:
 
 # Test and build
   myCI:
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }} == true
     runs-on: ubuntu-latest
     steps:
 
@@ -35,58 +34,59 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
           path: "github-ci"
 
-      # - name: Save Version
-      #   id: Save_Version
-      #   run: |
-      #     ./github-ci/export_version.sh
-      #     sudo mkdir /version/
-      #     sudo mv version.txt /version/
-      #     cat version/version.txt
-
       - name: Generate Tag Version
         id: Generate_Tag_Version
-        # if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-        # uses: battila7/get-version-action@v2
         run: |
-          LASTTAG=$(git describe --tags --abbrev=0 | sed 's/[^.0-9]*//g')
-          echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$LASTTAG"        
-          echo "Project version: $DOCKER_IMAGE$LASTTAG" > test_ver.txt
+          ./github-ci/export_version.sh
+          VERSION=$(cat /version/version.txt)
+          echo "::set-output name=PROJECT_VERSION::$VERSION"
+          echo $VERSION
 
-      - name: Save Tag Version
-        id: Save_Tag_Version
-        # if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-        run: |
-          sudo mkdir /version/
-          echo ${{ steps.Generate_Tag_Version.outputs.version-without-v }} > version.txt
-          sudo mv ./version.txt /version/version.txt
-          echo | cat /version/version.txt
-          echo | cat test_ver.txt
+      # - name: Generate Tag Version
+      #   id: Generate_Tag_Version
+      #   # if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+      #   # uses: battila7/get-version-action@v2
+      #   run: |
+      #     LASTTAG=$(git describe --tags --abbrev=0 | sed 's/[^.0-9]*//g')
+      #     echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$LASTTAG"        
+      #     echo "Project version: $DOCKER_IMAGE$LASTTAG" > test_ver.txt
 
-      - name: Export Version
-        id: Export_Version
-        run: |
-          echo "::set-output name=PROJECT_VERSION::$(cat /version/version.txt)"
-          echo | cat /version/version.txt
+      # - name: Save Tag Version
+      #   id: Save_Tag_Version
+      #   # if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+      #   run: |
+      #     sudo mkdir /version/
+      #     echo ${{ steps.Generate_Tag_Version.outputs.version-without-v }} > version.txt
+      #     sudo mv ./version.txt /version/version.txt
+      #     sudo echo | cat /version/version.txt
+      #     echo | cat test_ver.txt
 
-# Test NPM
-      - name: Install dependencies
-        id: Installing_NPM_Dependencies
-        run: |
-          echo "--- INSTALLING DEPENDENCIES ---"
-          npm install --no-audit
+      # - name: Export Version
+      #   id: Export_Version
+      #   run: |
+      #     echo "::set-output name=PROJECT_VERSION::$(cat /version/version.txt)"
+      #     sudo echo | cat /version/version.txt
+
+# # Test NPM
+#       - name: Install dependencies
+#         id: Installing_NPM_Dependencies
+#         run: |
+#           echo "--- INSTALLING DEPENDENCIES ---"
+#           npm install --no-audit
       
-      - name: Run unit tests
-        id: Unit_Tests
-        run: |
-          echo "--- RUNNING UNIT TESTS ---"
-          npm test 
+#       - name: Run unit tests
+#         id: Unit_Tests
+#         run: |
+#           echo "--- RUNNING UNIT TESTS ---"
+#           npm test 
 
-# Build image
-      - name: Build the Docker image
-        run: |
-          echo "--- Build image ---"
-          echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"        
-          ./github-ci/build.sh         
+# # Build image
+#       - name: Build the Docker image
+#         run: |
+#           echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"
+#           echo "--- Build image ---"
+#           copy 
+#           ./github-ci/build.sh         
 
 # Build and push
 #   Deploy:
