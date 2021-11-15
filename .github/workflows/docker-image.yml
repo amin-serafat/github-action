@@ -37,7 +37,8 @@ jobs:
         run: |
           COMMIT=$(git log -1 --pretty=tformat:%h)
           BRANCH=$(git branch --show-current)
-          echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$BRANCH-$COMMIT"        
+          GITVERSION=$(git describe --tags --abbrev=0 | sed 's/[^.0-9]*//g')
+          echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$GITVERSION"        
 
 # Build image
       - name: Build the Docker image
