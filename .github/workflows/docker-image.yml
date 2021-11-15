@@ -1,7 +1,7 @@
 name: ci
 
 env: 
-  DOCKER_IMAGE: "alehmudrak/github-action:"
+  DOCKER_HUB: "alehmudrak/github-action:"
 
 on:
 
@@ -28,11 +28,16 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
           path: github-ci
 
+      - name: Save DOCKER_HUB
+        id: Save_DOCKER_HUB
+        run: |          
+          echo $DOCKER_HUB > DOCKER_HUB.txt
+          sudo mkdir /version/
+          sudo mv DOCKER_HUB.txt /version/
+
       - name: Export Branch-Hash
         id: Export_Branch_Hash
         run: |          
-          COMMIT=$(git log -1 --pretty=tformat:%h)
-          BRANCH=$(git branch --show-current)
           ./github-ci/branch_version.sh
 
 
@@ -47,8 +52,6 @@ jobs:
       - name: Build the Docker image
         run: |
           echo "--- Build image ---"
-          echo "Project Branch-Hash: ${{  steps.Export_Branch_Hash.outputs.PROJECT_VERSION  }}"
-          echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"
           echo "From file /version/version.txt:"
           cat /version/version.txt
           IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
