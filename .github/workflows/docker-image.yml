@@ -6,8 +6,7 @@ env:
 on:
 
   create:
-
-  #   tag:
+    tag:
   #   tags:
   #     - v*
 
@@ -27,16 +26,25 @@ jobs:
       - id: Clone_Repository
         uses: actions/checkout@v2
 
+      - id: Clone_Repositoru_With_Common_Scripts
+        uses: actions/checkout@v2
+        with:
+          repository: amin-serafat/github-ci 
+          token: ${{ secrets.ACCESS_TOKEN }}
+          path: github-ci
+
+      - name: Save Version
+        id: Save_Version
+        run: |
+          ./baseline-cicd/common/export_version.sh
+          sudo mkdir /version/
+          sudo mv version.txt /version/          
+
       - name: Export Version
         id: Export_Version
         run: |
-          COMMIT=$(git log -1 --pretty=tformat:%h)
-          BRANCH=$(git branch --show-current)
-          # LASTTAG=$(git describe --tags --abbrev=0 | sed "s/v//")
-          LASTTAG=$(git describe --tags --abbrev=0 | sed 's/[^.^0-9]*//g')
-          echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$LASTTAG"        
-          echo "Project version: $DOCKER_IMAGE$LASTTAG"
-  
+          echo "::set-output name=PROJECT_VERSION::$(cat /version/version.txt)"
+
       - name: Install dependencies
         id: Installing_NPM_Dependencies
         run: |
@@ -54,40 +62,39 @@ jobs:
         run: |
           echo "--- Build image ---"
           echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"        
-          IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
-          docker build . --file Dockerfile --tag $IMAGE_NAME          
+          ./baseline-cicd/common/export_version.sh         
 
 # Build and push
-  Deploy:
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }} == true
-    needs: myCI
-    runs-on: ubuntu-latest
-    steps:
+#   Deploy:
+#     if: ${{ startsWith(github.ref, 'refs/tags/v') }} == true
+#     needs: myCI
+#     runs-on: ubuntu-latest
+#     steps:
       
-      - id: Clone_Repository
-        uses: actions/checkout@v2
+#       - id: Clone_Repository
+#         uses: actions/checkout@v2
 
-      - name: Export Version
-        id: Export_Version
-        run: |
-          COMMIT=$(git log -1 --pretty=tformat:%h)
-          BRANCH=$(git branch --show-current)
-          LASTTAG=$(git describe --tags --abbrev=0 | sed 's/[^.^0-9]*//g')
-          echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$LASTTAG"        
-          echo "Project version: $DOCKER_IMAGE$LASTTAG" 
+#       - name: Export Version
+#         id: Export_Version
+#         run: |
+#           COMMIT=$(git log -1 --pretty=tformat:%h)
+#           BRANCH=$(git branch --show-current)
+#           LASTTAG=$(git describe --tags --abbrev=0 | sed 's/[^.0-9]*//g')
+#           echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$LASTTAG"        
+#           echo "Project version: $DOCKER_IMAGE$LASTTAG" 
 
-# Build image
-      - name: Build the Docker image
-        run: |    
-          echo "--- Build image ---"
-          echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"
-          IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
-          docker build . --file Dockerfile --tag $IMAGE_NAME
+# # Build image
+#       - name: Build the Docker image
+#         run: |    
+#           echo "--- Build image ---"
+#           echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"
+#           IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
+#           docker build . --file Dockerfile --tag $IMAGE_NAME
 
-# Push in Docker Hub
-      - name: Push image
-        run: |    
-          echo "--- Push image ---"
-          IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
-          docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
-          docker push $IMAGE_NAME
+# # Push in Docker Hub
+#       - name: Push image
+#         run: |    
+#           echo "--- Push image ---"
+#           IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
+#           docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
+#           docker push $IMAGE_NAME
