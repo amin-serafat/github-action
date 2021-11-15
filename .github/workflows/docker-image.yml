@@ -53,6 +53,8 @@ jobs:
           echo "--- Build image ---"
           echo "Project Branch-Hash: ${{  steps.Export_Branch_Hash.outputs.PROJECT_VERSION  }}"
           echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"
+          echo "From file /version/version.txt:"
+          cat /version/version.txt
           IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
          
 
