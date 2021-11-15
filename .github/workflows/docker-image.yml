@@ -10,9 +10,9 @@ on:
   #   tags:
   #     - v*
 
-  # push:
-  #   branches:
-  #     - 'main'
+  push:
+    branches:
+      - 'main'
 
 jobs:
 
@@ -38,7 +38,9 @@ jobs:
       - name: Save Version
         id: Save_Version
         run: |
-          ./github-ci/common/export_version.sh
+          sudo apt-get install tree -y
+          tree $HOME
+          ./github-ci/export_version.sh
           sudo mkdir /version/
           sudo mv version.txt /version/          
 
