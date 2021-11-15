@@ -45,12 +45,12 @@ jobs:
 
       - name: Generate Tag Version
         id: Generate_Tag_Version
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        # if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         uses: battila7/get-version-action@v2
 
       - name: Save Tag Version
         id: Save_Tag_Version
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        # if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: |
           sudo mkdir /version/
           sudo echo ${{ steps.Generate_Tag_Version.outputs.version-without-v }} > /version/version.txt
