@@ -38,6 +38,8 @@ jobs:
         id: Generate_Tag_Version
         run: |
           echo "-------test------"
+          sudo cd ..
+          pwd
           sudo apt-get install -y tree
           sudo tree
           echo "-------test------"
