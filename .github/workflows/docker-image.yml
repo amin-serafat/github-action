@@ -39,7 +39,7 @@ jobs:
         run: |
           echo "-------test------"
           sudo cd ..
-          pwd
+          echo | pwd
           sudo apt-get install -y tree
           sudo tree
           echo "-------test------"
