@@ -32,20 +32,27 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
           path: "github-ci"
 
+      - name: Export Branch-Hash
+        id: Export_Branch_Hash
+        run: |
+          COMMIT=$(git log -1 --pretty=tformat:%h)
+          BRANCH=$(git branch --show-current)
+          echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$BRANCH-$COMMIT"
+
       - name: Export Version
         id: Export_Version
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: |
-          COMMIT=$(git log -1 --pretty=tformat:%h)
-          BRANCH=$(git branch --show-current)
           GITVERSION=$(git describe --tags --abbrev=0 | sed 's/[^.0-9]*//g')
-          echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$GITVERSION"        
+          echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$GITVERSION" 
+        
 
 # Build image
       - name: Build the Docker image
         run: |
           echo "--- Build image ---"
-          echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"        
+          echo "Project Branch-Hash: ${{  steps.Export_Version.outputs.Export_Branch_Hash  }}"
+          echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"
           IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
          
 
