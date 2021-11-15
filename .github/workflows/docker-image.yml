@@ -35,16 +35,13 @@ jobs:
       - name: Export Branch-Hash
         id: Export_Branch_Hash
         run: |
-          COMMIT=$(git log -1 --pretty=tformat:%h)
-          BRANCH=$(git branch --show-current)
-          echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$BRANCH-$COMMIT"
+          ./github-ci/branch_version.sh
 
       - name: Export Version
         id: Export_Version
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: |
-          GITVERSION=$(git describe --tags --abbrev=0 | sed 's/[^.0-9]*//g')
-          echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$GITVERSION" 
+          ./github-ci/teg_version.sh 
        
 
 # Build image
