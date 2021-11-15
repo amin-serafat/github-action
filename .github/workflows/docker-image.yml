@@ -38,7 +38,7 @@ jobs:
       - name: Save Version
         id: Save_Version
         run: |
-          ./baseline-cicd/common/export_version.sh
+          ./github-ci/common/export_version.sh
           sudo mkdir /version/
           sudo mv version.txt /version/          
 
