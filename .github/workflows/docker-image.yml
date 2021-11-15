@@ -19,22 +19,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-# Clone 2 repo and git Version
-      - name: Clone Repository
-        id: Clone_Repository
-        uses: actions/checkout@v2
-
-      - name: Clone Repository with common script
-        id: Clone_Repositoru_With_Common_Scripts
-        uses: actions/checkout@v2
+# Clone main repository
+      - uses: actions/checkout@v2
+# Clone repository with script
+      - uses: actions/checkout@v2
         with:
-          repository: "amin-serafat/github-ci "
+          repository: amin-serafat/github-ci
           token: ${{ secrets.ACCESS_TOKEN }}
-          path: "github-ci"
+          path: github-ci
 
       - name: Export Branch-Hash
         id: Export_Branch_Hash
-        run: |
+        run: |          
+          COMMIT=$(git log -1 --pretty=tformat:%h)
+          BRANCH=$(git branch --show-current)
           ./github-ci/branch_version.sh
 
 
