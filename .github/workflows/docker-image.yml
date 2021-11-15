@@ -6,7 +6,7 @@ env:
 on:
 
   create:
-  #  tag:
+    tag:
   #   tags:
   #     - v*
 
@@ -22,16 +22,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-# Test NPM
-      - id: Clone_Repository
+# Clone and Version
+      - name: Clone Repository
+        id: Clone_Repository
         uses: actions/checkout@v2
 
-      - id: Clone_Repositoru_With_Common_Scripts
+      - name: Clone Repository with common script
+        id: Clone_Repositoru_With_Common_Scripts
         uses: actions/checkout@v2
         with:
-          repository: amin-serafat/github-ci 
+          repository: "amin-serafat/github-ci "
           token: ${{ secrets.ACCESS_TOKEN }}
-          path: github-ci
+          path: "github-ci"
 
       - name: Save Version
         id: Save_Version
@@ -45,6 +47,7 @@ jobs:
         run: |
           echo "::set-output name=PROJECT_VERSION::$(cat /version/version.txt)"
 
+# Test NPM
       - name: Install dependencies
         id: Installing_NPM_Dependencies
         run: |
