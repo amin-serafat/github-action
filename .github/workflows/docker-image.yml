@@ -10,9 +10,9 @@ on:
   #   tags:
   #     - v*
 
-  # push:
-  #   branches:
-  #     - 'main'
+  push:
+    branches:
+      - 'main'
 
 jobs:
 
@@ -38,7 +38,7 @@ jobs:
         id: Generate_Tag_Version
         run: |
           ./github-ci/export_version.sh
-          sudo VERSION=$(cat /version/version.txt)
+          VERSION=$(sudo cat /version/version.txt)
           echo "::set-output name=PROJECT_VERSION::$VERSION"
           echo $VERSION
           ls -la
