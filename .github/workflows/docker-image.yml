@@ -18,104 +18,29 @@ jobs:
 
 # Test and build
   myCI:
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }} == true
     runs-on: ubuntu-latest
     steps:
 
-# Clone and Version
-      - name: Clone Repository
-        id: Clone_Repository
+# Test NPM
+      - id: Clone_Repository
         uses: actions/checkout@v2
 
-      - name: Clone Repository with common script
-        id: Clone_Repositoru_With_Common_Scripts
-        uses: actions/checkout@v2
-        with:
-          repository: "amin-serafat/github-ci "
-          token: ${{ secrets.ACCESS_TOKEN }}
-          path: "github-ci"
-
-      - name: Generate Tag Version
-        id: Generate_Tag_Version
+      - name: Export Version
+        id: Export_Version
         run: |
-          git describe --tags --abbrev=0 | sed 's/[^.0-9]*//g' > PROJECT_VERSION.txt
+          COMMIT=$(git log -1 --pretty=tformat:%h)
+          BRANCH=$(git branch --show-current)
+          # LASTTAG=$(git describe --tags --abbrev=0 | sed "s/v//")
+          LASTTAG=$(git describe --tags --abbrev=0 | sed 's/[^.0-9]*//g')
+          echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$LASTTAG"        
+          echo "Project version: $DOCKER_IMAGE$LASTTAG"
 
-      # - name: Generate Tag Version
-      #   id: Generate_Tag_Version
-      #   # if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-      #   # uses: battila7/get-version-action@v2
-      #   run: |
-      #     LASTTAG=$(git describe --tags --abbrev=0 | sed 's/[^.0-9]*//g')
-      #     echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$LASTTAG"        
-      #     echo "Project version: $DOCKER_IMAGE$LASTTAG" > test_ver.txt
 
-      # - name: Save Tag Version
-      #   id: Save_Tag_Version
-      #   # if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-      #   run: |
-      #     sudo mkdir /version/
-      #     echo ${{ steps.Generate_Tag_Version.outputs.version-without-v }} > version.txt
-      #     sudo mv ./version.txt /version/version.txt
-      #     sudo echo | cat /version/version.txt
-      #     echo | cat test_ver.txt
-
-      # - name: Export Version
-      #   id: Export_Version
-      #   run: |
-      #     echo "::set-output name=PROJECT_VERSION::$(cat /version/version.txt)"
-      #     sudo echo | cat /version/version.txt
-
-# # Test NPM
-#       - name: Install dependencies
-#         id: Installing_NPM_Dependencies
-#         run: |
-#           echo "--- INSTALLING DEPENDENCIES ---"
-#           npm install --no-audit
-      
-#       - name: Run unit tests
-#         id: Unit_Tests
-#         run: |
-#           echo "--- RUNNING UNIT TESTS ---"
-#           npm test 
-
-# # Build image
-#       - name: Build the Docker image
-#         run: |
-#           echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"
-#           echo "--- Build image ---"
-#           copy 
-#           ./github-ci/build.sh         
-
-# Build and push
-#   Deploy:
-#     if: ${{ startsWith(github.ref, 'refs/tags/v') }} == true
-#     needs: myCI
-#     runs-on: ubuntu-latest
-#     steps:
-      
-#       - id: Clone_Repository
-#         uses: actions/checkout@v2
-
-#       - name: Export Version
-#         id: Export_Version
-#         run: |
-#           COMMIT=$(git log -1 --pretty=tformat:%h)
-#           BRANCH=$(git branch --show-current)
-#           LASTTAG=$(git describe --tags --abbrev=0 | sed 's/[^.0-9]*//g')
-#           echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$LASTTAG"        
-#           echo "Project version: $DOCKER_IMAGE$LASTTAG" 
-
-# # Build image
-#       - name: Build the Docker image
-#         run: |    
-#           echo "--- Build image ---"
-#           echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"
-#           IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
-#           docker build . --file Dockerfile --tag $IMAGE_NAME
-
-# # Push in Docker Hub
-#       - name: Push image
-#         run: |    
-#           echo "--- Push image ---"
-#           IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
-#           docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
-#           docker push $IMAGE_NAME
+# Build image
+      - name: Build the Docker image
+        run: |
+          echo "--- Build image ---"
+          echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"        
+          IMAGE_NAME=${{  steps.Export_Version.outputs.PROJECT_VERSION  }}
+          
