@@ -38,11 +38,10 @@ jobs:
       - name: Save Version
         id: Save_Version
         run: |
-          sudo apt-get install tree -y
-          tree $HOME
           ./github-ci/export_version.sh
           sudo mkdir /version/
-          sudo mv version.txt /version/          
+          sudo mv version.txt /version/
+          cat version/version.txt
 
       - name: Export Version
         id: Export_Version
@@ -67,7 +66,7 @@ jobs:
         run: |
           echo "--- Build image ---"
           echo "Project version: ${{  steps.Export_Version.outputs.PROJECT_VERSION  }}"        
-          ./github-ci/common/build.sh         
+          ./github-ci/build.sh         
 
 # Build and push
 #   Deploy:
