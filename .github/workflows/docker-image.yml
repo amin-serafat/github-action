@@ -19,7 +19,7 @@ jobs:
 
 # Test and build
   myCI:
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }} == true
     runs-on: ubuntu-latest
     steps:
 
@@ -33,8 +33,8 @@ jobs:
           COMMIT=$(git log -1 --pretty=tformat:%h)
           BRANCH=$(git branch --show-current)
           LASTTAG=$(git describe --tags --abbrev=0 | sed "s/v//")
-          echo "$DOCKER_IMAGE$LASTTAG"
           echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$LASTTAG"        
+          echo "Project version: $DOCKER_IMAGE$LASTTAG"
   
       - name: Install dependencies
         id: Installing_NPM_Dependencies
@@ -58,7 +58,7 @@ jobs:
 
 # Build and push
   Deploy:
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }} == true
     needs: myCI
     runs-on: ubuntu-latest
     steps:
@@ -72,7 +72,8 @@ jobs:
           COMMIT=$(git log -1 --pretty=tformat:%h)
           BRANCH=$(git branch --show-current)
           LASTTAG=$(git describe --tags --abbrev=0 | sed "s/v//")
-          echo "::set-output name=PROJECT_VERSION::$LASTTAG"   
+          echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$LASTTAG"        
+          echo "Project version: $DOCKER_IMAGE$LASTTAG" 
 
 # Build image
       - name: Build the Docker image
