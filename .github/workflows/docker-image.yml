@@ -18,7 +18,7 @@ jobs:
 
 # Test and build
   myCI:
-    if: ${{ startsWith(github.ref, 'refs/tags/v' }}
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     runs-on: ubuntu-latest
     steps:
 
@@ -55,7 +55,7 @@ jobs:
 
 # Build and push
   Deploy:
-    if: ${{ startsWith(github.ref, 'refs/tags/v' }}
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }}
     needs: myCI
     runs-on: ubuntu-latest
     steps:
