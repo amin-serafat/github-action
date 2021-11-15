@@ -32,7 +32,8 @@ jobs:
         run: |
           COMMIT=$(git log -1 --pretty=tformat:%h)
           BRANCH=$(git branch --show-current)
-          LASTTAG=$(git describe --tags --abbrev=0 | sed "s/v//")
+          # LASTTAG=$(git describe --tags --abbrev=0 | sed "s/v//")
+          LASTTAG=$(git describe --tags --abbrev=0 | sed 's/[^.^0-9]*//g')
           echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$LASTTAG"        
           echo "Project version: $DOCKER_IMAGE$LASTTAG"
   
@@ -71,7 +72,7 @@ jobs:
         run: |
           COMMIT=$(git log -1 --pretty=tformat:%h)
           BRANCH=$(git branch --show-current)
-          LASTTAG=$(git describe --tags --abbrev=0 | sed "s/v//")
+          LASTTAG=$(git describe --tags --abbrev=0 | sed 's/[^.^0-9]*//g')
           echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$LASTTAG"        
           echo "Project version: $DOCKER_IMAGE$LASTTAG" 
 
