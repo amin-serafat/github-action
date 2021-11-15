@@ -26,7 +26,6 @@ jobs:
           COMMIT=$(git log -1 --pretty=tformat:%h)
           BRANCH=$(git branch --show-current)
           echo "::set-output name=PROJECT_VERSION::$DOCKER_IMAGE$BRANCH-$COMMIT"        
-  
 
 # Build image
       - name: Build the Docker image
