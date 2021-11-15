@@ -37,16 +37,11 @@ jobs:
       - name: Generate Tag Version
         id: Generate_Tag_Version
         run: |
-          echo "-------test------"
-          sudo cd ..
-          echo | pwd
-          sudo apt-get install -y tree
-          sudo tree
-          echo "-------test------"
           ./github-ci/export_version.sh
-          VERSION=$(cat /version/version.txt)
+          sudo VERSION=$(cat /version/version.txt)
           echo "::set-output name=PROJECT_VERSION::$VERSION"
           echo $VERSION
+          ls -la
 
       # - name: Generate Tag Version
       #   id: Generate_Tag_Version
