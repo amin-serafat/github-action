@@ -37,8 +37,9 @@ jobs:
       - name: Generate Tag Version
         id: Generate_Tag_Version
         run: |
-          ./github-ci/version.sh
+          # ./github-ci/version.sh
           sudo mkdir /version/
+          git describe --tags --abbrev=0 | sed 's/[^.0-9]*//g' > PROJECT_VERSION.txt
           sudo mv PROJECT_VERSION.txt /version/
           PROJECT_VERSION=$(sudo cat /version/PROJECT_VERSION.txt)
           echo "::set-output name=PROJECT_VERSION::$PROJECT_VERSION"
