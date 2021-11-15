@@ -5,6 +5,9 @@ env:
 
 on:
 
+  create:
+    tag:
+
   push:
     branches:
       - 'main'
@@ -16,9 +19,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
-# Test NPM
-      - id: Clone_Repository
+# Clone 2 repo and git Version
+      - name: Clone Repository
+        id: Clone_Repository
         uses: actions/checkout@v2
+
+      - name: Clone Repository with common script
+        id: Clone_Repositoru_With_Common_Scripts
+        uses: actions/checkout@v2
+        with:
+          repository: "amin-serafat/github-ci "
+          token: ${{ secrets.ACCESS_TOKEN }}
+          path: "github-ci"
 
       - name: Export Version
         id: Export_Version
