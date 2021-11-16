@@ -36,11 +36,17 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
           path: github-ci
 
+# # Slack "Start workflow github-action."
+#       - name: Slack Start
+#         id: Slack_Start
+#         run: |          
+#           ./github-ci/slackStart.sh
+
 # Slack "Start workflow github-action."
       - name: Slack Start
         id: Slack_Start
         run: |          
-          ./github-ci/slackStart.sh
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Start workflow github-action."}' https://hooks.slack.com/services/${{ secrets.SLACK_WEB_HOOK }}
 
 # Save DockerHub path
       - name: Save DockerHub_Path
@@ -61,125 +67,125 @@ jobs:
         run: |
           ./github-ci/teg_version.sh
 
-# Test NPM
-      - name: Install dependencies
-        id: Installing_NPM_Dependencies
-        run: |
-          echo "--- INSTALLING DEPENDENCIES ---"
-          npm install --no-audit
+# # Test NPM
+#       - name: Install dependencies
+#         id: Installing_NPM_Dependencies
+#         run: |
+#           echo "--- INSTALLING DEPENDENCIES ---"
+#           npm install --no-audit
       
-      - name: Run unit tests
-        id: Unit_Tests
-        run: |
-          echo "--- RUNNING UNIT TESTS ---"
-          npm test 
+#       - name: Run unit tests
+#         id: Unit_Tests
+#         run: |
+#           echo "--- RUNNING UNIT TESTS ---"
+#           npm test 
 
-# Build image
-      - name: Build the Docker image
-        run: |
-          echo "--- Build image ---"
-          ./github-ci/build.sh
-
-
-# --- Deploy --- Build and push ---
-  Deploy:
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }} == true
-    needs: myCI
-    runs-on: ubuntu-latest
-    steps:
-
-# Clone main repository
-      - uses: actions/checkout@v2
-# Clone repository with script
-      - uses: actions/checkout@v2
-        with:
-          repository: amin-serafat/github-ci
-          token: ${{ secrets.ACCESS_TOKEN }}
-          path: github-ci
-
-# Save DockerHub path
-      - name: Save DockerHub_Path
-        id: Save_DOCKER_HUB
-        run: |          
-          echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
-          echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
-          ./github-ci/version.sh
-
-      - name: Export Branch-Hash
-        id: Export_Branch_Hash
-        run: |          
-          ./github-ci/branch_version.sh
-
-      - name: Export Version
-        id: Export_Version
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-        run: |
-          ./github-ci/teg_version.sh
-
-# Build image
-      - name: Build the Docker image
-        run: |
-          echo "--- Build image ---"
-          ./github-ci/build.sh
-
-# Push in Docker Hub
-      - name: Push image
-        run: |    
-          echo "--- Push image ---"
-          docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
-          ./github-ci/push.sh
+# # Build image
+#       - name: Build the Docker image
+#         run: |
+#           echo "--- Build image ---"
+#           ./github-ci/build.sh
 
 
-# --- CD --- Pull and Run ---
-  CD:
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }} == true
-    needs: Deploy
-    runs-on: ubuntu-latest
-    steps:
+# # --- Deploy --- Build and push ---
+#   Deploy:
+#     if: ${{ startsWith(github.ref, 'refs/tags/v') }} == true
+#     needs: myCI
+#     runs-on: ubuntu-latest
+#     steps:
 
-# Clone main repository
-      - uses: actions/checkout@v2
-# Clone repository with script
-      - uses: actions/checkout@v2
-        with:
-          repository: amin-serafat/github-ci
-          token: ${{ secrets.ACCESS_TOKEN }}
-          path: github-ci
+# # Clone main repository
+#       - uses: actions/checkout@v2
+# # Clone repository with script
+#       - uses: actions/checkout@v2
+#         with:
+#           repository: amin-serafat/github-ci
+#           token: ${{ secrets.ACCESS_TOKEN }}
+#           path: github-ci
 
-# Save DockerHub path
-      - name: Save DockerHub_Path
-        id: Save_DOCKER_HUB
-        run: |          
-          echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
-          echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
-          ./github-ci/version.sh
+# # Save DockerHub path
+#       - name: Save DockerHub_Path
+#         id: Save_DOCKER_HUB
+#         run: |          
+#           echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
+#           echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
+#           ./github-ci/version.sh
 
-      - name: Export Branch-Hash
-        id: Export_Branch_Hash
-        run: |          
-          ./github-ci/branch_version.sh
+#       - name: Export Branch-Hash
+#         id: Export_Branch_Hash
+#         run: |          
+#           ./github-ci/branch_version.sh
 
-      - name: Export Version
-        id: Export_Version
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-        run: |
-          ./github-ci/teg_version.sh
+#       - name: Export Version
+#         id: Export_Version
+#         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+#         run: |
+#           ./github-ci/teg_version.sh
 
-# Pull from Docker Hub
-      - name: Pull image
-        run: |    
-          echo "--- Pull image ---"
-          docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
-          ./github-ci/pull.sh
+# # Build image
+#       - name: Build the Docker image
+#         run: |
+#           echo "--- Build image ---"
+#           ./github-ci/build.sh
 
-# Run container
-      - name: Run image
-        run: |    
-          echo "--- Run_image ---"
-          ./github-ci/run.sh
+# # Push in Docker Hub
+#       - name: Push image
+#         run: |    
+#           echo "--- Push image ---"
+#           docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
+#           ./github-ci/push.sh
 
-# Slack "Finish workflow github-action."
-      - name: Slack finish
-        id: Slack_finish
-        run: |          
-          ./github-ci/slackFinish.sh
+
+# # --- CD --- Pull and Run ---
+#   CD:
+#     if: ${{ startsWith(github.ref, 'refs/tags/v') }} == true
+#     needs: Deploy
+#     runs-on: ubuntu-latest
+#     steps:
+
+# # Clone main repository
+#       - uses: actions/checkout@v2
+# # Clone repository with script
+#       - uses: actions/checkout@v2
+#         with:
+#           repository: amin-serafat/github-ci
+#           token: ${{ secrets.ACCESS_TOKEN }}
+#           path: github-ci
+
+# # Save DockerHub path
+#       - name: Save DockerHub_Path
+#         id: Save_DOCKER_HUB
+#         run: |          
+#           echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
+#           echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
+#           ./github-ci/version.sh
+
+#       - name: Export Branch-Hash
+#         id: Export_Branch_Hash
+#         run: |          
+#           ./github-ci/branch_version.sh
+
+#       - name: Export Version
+#         id: Export_Version
+#         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+#         run: |
+#           ./github-ci/teg_version.sh
+
+# # Pull from Docker Hub
+#       - name: Pull image
+#         run: |    
+#           echo "--- Pull image ---"
+#           docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
+#           ./github-ci/pull.sh
+
+# # Run container
+#       - name: Run image
+#         run: |    
+#           echo "--- Run_image ---"
+#           ./github-ci/run.sh
+
+# # Slack "Finish workflow github-action."
+#       - name: Slack finish
+#         id: Slack_finish
+#         run: |          
+#           ./github-ci/slackFinish.sh
