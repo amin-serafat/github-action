@@ -43,16 +43,11 @@ jobs:
 #         run: |          
 #           ./github-ci/slackStart.sh
 
-# Slack "Start workflow github-action."
-      - name: Slack Start
-        id: Slack_Start
-        run: |          
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployment start!"}' $SLACK_WEBHOOK_URL
-
 # Save DockerHub path
       - name: Save DockerHub_Path
         id: Save_DOCKER_HUB
         run: |          
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployment start!"}' $SLACK_WEBHOOK_URL
           echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
           echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
           ./github-ci/version.sh
