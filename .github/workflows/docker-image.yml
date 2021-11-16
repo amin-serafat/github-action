@@ -28,6 +28,7 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
           path: github-ci
 
+# Save version and DOCKER_HUB
       - name: Save DOCKER_HUB
         id: Save_DOCKER_HUB
         run: |          
@@ -40,13 +41,12 @@ jobs:
         run: |          
           ./github-ci/branch_version.sh
 
-
       - name: Export Version
         id: Export_Version
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: |
-          ./github-ci/teg_version.sh 
-       
+          ./github-ci/teg_version.sh
+
 
 # Build image
       - name: Build the Docker image
@@ -55,5 +55,62 @@ jobs:
           echo "From file /version/version.txt:"
           cat /version/version.txt
           ./github-ci/build.sh
-         
 
+
+# --- Deploy --- Build and push ---
+  Deploy:
+    if: ${{ startsWith(github.ref, 'refs/tags/v') }} == true
+    needs: myCI
+    runs-on: ubuntu-latest
+    steps:
+
+# Clone main repository
+      - uses: actions/checkout@v2
+# Clone repository with script
+      - uses: actions/checkout@v2
+        with:
+          repository: amin-serafat/github-ci
+          token: ${{ secrets.ACCESS_TOKEN }}
+          path: github-ci
+
+# Save version and secret
+      - name: Save DOCKER_HUB
+        id: Save_DOCKER_HUB
+        run: |          
+          echo $DOCKER_HUB > DOCKER_HUB.txt
+          echo ${{ secrets.DOCKERHUB_TOKEN }} > DOCKERHUB_TOKEN.txt
+          echo ${{ secrets.DOCKERHUB_USERNAME }} > DOCKERHUB_USERNAME.txt
+          ./github-ci/version.sh
+          
+
+      - name: Save DOCKERHUB_USERNAME and DOCKERHUB_TOKEN
+        id: Save_DOCKER_User_Token
+        run: |          
+          echo $DOCKER_HUB > DOCKER_HUB.txt
+          sudo mkdir /version/
+          sudo mv DOCKER_HUB.txt /version/
+
+      - name: Export Branch-Hash
+        id: Export_Branch_Hash
+        run: |          
+          ./github-ci/branch_version.sh
+
+      - name: Export Version
+        id: Export_Version
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        run: |
+          ./github-ci/teg_version.sh
+
+# Build image
+      - name: Build the Docker image
+        run: |
+          echo "--- Build image ---"
+          echo "From file /version/version.txt:"
+          cat /version/version.txt
+          ./github-ci/build.sh
+
+# Push in Docker Hub
+      - name: Push image
+        run: |    
+          echo "--- Push image ---"
+          ./github-ci/push.sh
