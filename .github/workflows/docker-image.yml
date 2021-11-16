@@ -34,7 +34,7 @@ jobs:
         id: Save_DOCKER_HUB
         run: |          
           echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
-          echo $DOCKERREPOSITORY > DOCKERHUBACCOUNT.txt
+          echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
           ./github-ci/version.sh
 
       - name: Export Branch-Hash
@@ -78,7 +78,7 @@ jobs:
         id: Save_DOCKER_HUB
         run: |          
           echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
-          echo $DOCKERREPOSITORY > DOCKERHUBACCOUNT.txt
+          echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
           ./github-ci/version.sh
 
       - name: Export Branch-Hash
@@ -128,7 +128,7 @@ jobs:
         id: Save_DOCKER_HUB
         run: |          
           echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
-          echo $DOCKERREPOSITORY > DOCKERHUBACCOUNT.txt
+          echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
           ./github-ci/version.sh
 
       - name: Export Branch-Hash
