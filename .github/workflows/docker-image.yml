@@ -3,8 +3,8 @@ name: ci
 env: 
   DOCKERHUBACCOUNT: "alehmudrak"
   DOCKERREPOSITORY: "github-action"
-  SLACK_WEBHOOK_URL: "https://hooks.slack.com/services/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" 
-  # ${{ secrets.SLACK_WEB_HOOK }}
+  # SLACK_WEBHOOK_URL: "https://hooks.slack.com/services/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" 
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEB_HOOK }}
 
 on:
 
@@ -28,6 +28,13 @@ jobs:
   myCI:
     runs-on: ubuntu-latest
     steps:
+
+      - uses: act10ns/slack@v1
+        with:
+          status: starting
+          channel: '#test-chat-ops'
+          message: Starting Docker Build and Push...
+        if: always()
 
 # Clone main repository
       - uses: actions/checkout@v2
