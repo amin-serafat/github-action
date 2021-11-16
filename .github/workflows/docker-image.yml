@@ -105,4 +105,5 @@ jobs:
       - name: Push image
         run: |    
           echo "--- Push image ---"
+          docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
           ./github-ci/push.sh
