@@ -99,14 +99,6 @@ jobs:
           cat /version/version.txt
           ./github-ci/build.sh
 
-# Docker Login
-      - uses: Azure/docker-login@v1
-        id: Docker_Login
-        with:
-          login-server: ${{ steps.myGetSecretAction.outputs.ACR-LOGINSERVER }}
-          username: ${{ steps.myGetSecretAction.outputs.ACR-USERNAME }}
-          password: ${{ steps.myGetSecretAction.outputs.ACR-PASSWORD }}  
-
 # Push in Docker Hub
       - name: Push image
         run: |    
