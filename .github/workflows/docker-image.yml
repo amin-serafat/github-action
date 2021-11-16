@@ -74,21 +74,13 @@ jobs:
           path: github-ci
 
 # Save version and secret
-      - name: Save DOCKER_HUB
+      - name: Save DOCKERHUB Secrets
         id: Save_DOCKER_HUB
         run: |          
           echo $DOCKER_HUB > DOCKER_HUB.txt
           echo ${{ secrets.DOCKERHUB_TOKEN }} > DOCKERHUB_TOKEN.txt
           echo ${{ secrets.DOCKERHUB_USERNAME }} > DOCKERHUB_USERNAME.txt
           ./github-ci/version.sh
-          
-
-      - name: Save DOCKERHUB_USERNAME and DOCKERHUB_TOKEN
-        id: Save_DOCKER_User_Token
-        run: |          
-          echo $DOCKER_HUB > DOCKER_HUB.txt
-          sudo mkdir /version/
-          sudo mv DOCKER_HUB.txt /version/
 
       - name: Export Branch-Hash
         id: Export_Branch_Hash
