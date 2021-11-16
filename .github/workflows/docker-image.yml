@@ -48,6 +48,18 @@ jobs:
         run: |
           ./github-ci/teg_version.sh
 
+# Test NPM
+      - name: Install dependencies
+        id: Installing_NPM_Dependencies
+        run: |
+          echo "--- INSTALLING DEPENDENCIES ---"
+          npm install --no-audit
+      
+      - name: Run unit tests
+        id: Unit_Tests
+        run: |
+          echo "--- RUNNING UNIT TESTS ---"
+          npm test 
 
 # Build image
       - name: Build the Docker image
