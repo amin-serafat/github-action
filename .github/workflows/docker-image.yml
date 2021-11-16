@@ -13,6 +13,13 @@ on:
     branches:
       - 'main'
 
+  workflow_dispatch:
+    inputs:
+      name:
+        description: 'Type "\yes"'
+        default: '\yes'
+        required: true
+
 jobs:
 
 # Test and build
@@ -29,6 +36,12 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
           path: github-ci
 
+# Slack "Start workflow github-action."
+      - name: Save DockerHub_Path
+        id: Save_DOCKER_HUB
+        run: |          
+          ./github-ci/slackStart.sh
+
 # Save DockerHub path
       - name: Save DockerHub_Path
         id: Save_DOCKER_HUB
@@ -42,7 +55,7 @@ jobs:
         run: |          
           ./github-ci/branch_version.sh
 
-      - name: Export Version
+      - name: Export Tag-version
         id: Export_Version
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: |
@@ -164,3 +177,9 @@ jobs:
         run: |    
           echo "--- Run_image ---"
           ./github-ci/run.sh
+
+# Slack "Finish workflow github-action."
+      - name: Save DockerHub_Path
+        id: Save_DOCKER_HUB
+        run: |          
+          ./github-ci/slackFinish.sh
