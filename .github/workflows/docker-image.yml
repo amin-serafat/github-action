@@ -37,8 +37,8 @@ jobs:
           path: github-ci
 
 # Slack "Start workflow github-action."
-      - name: Save DockerHub_Path
-        id: Save_DOCKER_HUB
+      - name: Slack Start
+        id: Slack_Start
         run: |          
           ./github-ci/slackStart.sh
 
@@ -179,7 +179,7 @@ jobs:
           ./github-ci/run.sh
 
 # Slack "Finish workflow github-action."
-      - name: Save DockerHub_Path
-        id: Save_DOCKER_HUB
+      - name: Slack finish
+        id: Slack_finish
         run: |          
           ./github-ci/slackFinish.sh
