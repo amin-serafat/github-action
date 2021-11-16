@@ -3,6 +3,7 @@ name: ci
 env: 
   DOCKERHUBACCOUNT: "alehmudrak"
   DOCKERREPOSITORY: "github-action"
+  SLACK_WEB_HOOK: ${{ secrets.SLACK_WEB_HOOK }}
 
 on:
 
@@ -46,7 +47,7 @@ jobs:
       - name: Slack Start
         id: Slack_Start
         run: |          
-          curl -X POST -H 'Content-type: application/json' --data '{"text":"Start workflow github-action."}' ${{ secrets.SLACK_WEB_HOOK }}
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Start workflow github-action."}' $SLACK_WEB_HOOK
 
 # Save DockerHub path
       - name: Save DockerHub_Path
