@@ -73,13 +73,11 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
           path: github-ci
 
-# Save version and secret
-      - name: Save DOCKERHUB Secrets
+# Save version
+      - name: Save version
         id: Save_DOCKER_HUB
         run: |          
           echo $DOCKER_HUB > DOCKER_HUB.txt
-          echo ${{ secrets.DOCKERHUB_TOKEN }} > DOCKERHUB_TOKEN.txt
-          echo ${{ secrets.DOCKERHUB_USERNAME }} > DOCKERHUB_USERNAME.txt
           ./github-ci/version.sh
 
       - name: Export Branch-Hash
