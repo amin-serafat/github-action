@@ -38,11 +38,12 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
           path: github-ci
 
-# # Slack "Start workflow github-action."
-#       - name: Slack Start
-#         id: Slack_Start
-#         run: |          
-#           ./github-ci/slackStart.sh
+# Slack "Start workflow github-action."
+      - name: Slack Start
+        id: Slack_Start
+        run: |          
+          curl -X POST -H 'Content-type: application/json' --data '{"text":"Deployment start!"}' https://hooks.slack.com/services/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
+# ./github-ci/slackStart.sh
 
 # Save DockerHub path
       - name: Save DockerHub_Path
