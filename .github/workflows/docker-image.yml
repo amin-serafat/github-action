@@ -1,7 +1,8 @@
 name: ci
 
 env: 
-  DOCKER_HUB: "alehmudrak/github-action:"
+  MYREGISTRY: "alehmudrak"
+  MYAPPLICATION: "github-action"
 
 on:
 
@@ -28,13 +29,12 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
           path: github-ci
 
-# Save version and DOCKER_HUB
-      - name: Save DOCKER_HUB
+# Save DockerHub path
+      - name: Save DockerHub_Path
         id: Save_DOCKER_HUB
         run: |          
-          echo $DOCKER_HUB > DOCKER_HUB.txt
-          sudo mkdir /version/
-          sudo mv DOCKER_HUB.txt /version/
+          echo "$MYREGISTRY/$MYAPPLICATION:" > DOCKER_HUB.txt
+          ./github-ci/version.sh
 
       - name: Export Branch-Hash
         id: Export_Branch_Hash
@@ -73,11 +73,11 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
           path: github-ci
 
-# Save version
-      - name: Save version
+# Save DockerHub path
+      - name: Save DockerHub_Path
         id: Save_DOCKER_HUB
         run: |          
-          echo $DOCKER_HUB > DOCKER_HUB.txt
+          echo "$MYREGISTRY/$MYAPPLICATION:" > DOCKER_HUB.txt
           ./github-ci/version.sh
 
       - name: Export Branch-Hash
@@ -98,6 +98,14 @@ jobs:
           echo "From file /version/version.txt:"
           cat /version/version.txt
           ./github-ci/build.sh
+
+# Docker Login
+      - uses: Azure/docker-login@v1
+        id: Docker_Login
+        with:
+          login-server: ${{ steps.myGetSecretAction.outputs.ACR-LOGINSERVER }}
+          username: ${{ steps.myGetSecretAction.outputs.ACR-USERNAME }}
+          password: ${{ steps.myGetSecretAction.outputs.ACR-PASSWORD }}  
 
 # Push in Docker Hub
       - name: Push image
