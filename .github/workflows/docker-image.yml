@@ -30,10 +30,13 @@ jobs:
 
 # Send message in Slack
       - uses: act10ns/slack@v1
+        run: MYDATE=$(date)
         with:
           status: starting
           channel: '#test-chat-ops'
-          message: Starting Docker Build and Push with workflow_dispatch=${{ github.event.inputs.deploy }}...
+          message: |
+            "Pipeline started at $MYDATE."
+            "Vars: workflow_dispatch=${{ github.event.inputs.deploy }}"
         if: always()
 
 # Clone main repository
@@ -47,7 +50,6 @@ jobs:
 
 # Save DockerHub path
       - name: Save DockerHub_Path
-        id: Save_DOCKER_HUB
         run: |          
           echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
           echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
@@ -79,6 +81,7 @@ jobs:
 
 # Build image
       - name: Build the Docker image
+        id: Build_Docker_image
         run: |
           echo "--- Build image ---"
           ./github-ci/build.sh
