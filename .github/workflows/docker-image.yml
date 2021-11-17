@@ -28,13 +28,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+# Receive date
+      - name: Receive date
+        run: |          
+          MYDATE=$(date)
+
 # Send message in Slack
       - uses: act10ns/slack@v1
         with:
           status: starting
           channel: '#test-chat-ops'
           message: |
-            "Pipeline started at $(date)."
+            "Pipeline started at $MYDATE."
             "Vars: workflow_dispatch=${{ github.event.inputs.deploy }}"
         if: always()
 
