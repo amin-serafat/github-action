@@ -30,12 +30,11 @@ jobs:
 
 # Send message in Slack
       - uses: act10ns/slack@v1
-        run: MYDATE=$(date)
         with:
           status: starting
           channel: '#test-chat-ops'
           message: |
-            "Pipeline started at $MYDATE."
+            "Pipeline started at $(date)."
             "Vars: workflow_dispatch=${{ github.event.inputs.deploy }}"
         if: always()
 
