@@ -4,6 +4,7 @@ env:
   DOCKERHUBACCOUNT: "alehmudrak"
   DOCKERREPOSITORY: "github-action"
   SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  MYDATE: $(date)
 
 on:
 
@@ -27,11 +28,6 @@ jobs:
   myCI:
     runs-on: ubuntu-latest
     steps:
-
-# Receive date
-      - name: Receive date
-        run: |          
-          MYDATE=$(date)
 
 # Send message in Slack
       - uses: act10ns/slack@v1
