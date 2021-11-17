@@ -145,6 +145,7 @@ jobs:
 # Build image
       - name: Build the Docker image
         if: ${{ github.event.inputs.deploy == 'yes'}}
+        id: Build_Docker_image
         run: |
           echo "--- Build image ---"
           ./github-ci/build.sh
@@ -152,6 +153,7 @@ jobs:
 # Push in Docker Hub
       - name: Push image
         if: ${{ github.event.inputs.deploy == 'yes'}}
+        id: Build_Push_image
         run: |    
           echo "--- Push image ---"
           docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
@@ -211,6 +213,7 @@ jobs:
 
 # Pull from Docker Hub
       - name: Pull image
+        id: Build_Pull_image
         if: ${{ github.event.inputs.deploy == 'yes'}}
         run: |    
           echo "--- Pull image ---"
@@ -219,6 +222,7 @@ jobs:
 
 # Run container
       - name: Run image
+        id: Build_Run_image
         if: ${{ github.event.inputs.deploy == 'yes'}}
         run: |    
           echo "--- Run_image ---"
