@@ -33,7 +33,7 @@ jobs:
         with:
           status: starting
           channel: '#test-chat-ops'
-          message: Starting Docker Build and Push...
+          message: Starting Docker Build and Push with workflow_dispatch=${{ github.event.inputs.deploy }}...
         if: always()
 
 # Clone main repository
