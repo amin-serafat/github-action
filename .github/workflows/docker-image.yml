@@ -16,9 +16,9 @@ on:
 
   workflow_dispatch:
     inputs:
-      name:
-        description: 'Type "\yes"'
-        default: '\yes'
+      deploy:
+        description: 'Deploy? (yes/no).'
+#        default: 'yes'
         required: true
 
 jobs:
@@ -54,12 +54,12 @@ jobs:
           ./github-ci/version.sh
 
       - name: Export Branch-Hash
-        id: Export_Branch_Hash
+        id: Export_Branch_Version
         run: |          
           ./github-ci/branch_version.sh
 
       - name: Export Tag-version
-        id: Export_Version
+        id: Export_Git_Version
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: |
           ./github-ci/teg_version.sh
@@ -94,7 +94,7 @@ jobs:
 
 # --- Deploy --- Build and push ---
   Deploy:
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }} == true
+    if: ${{ github.event_name == 'push' }} && ${{ github.event_name == 'workflow_dispatch'}}
     needs: myCI
     runs-on: ubuntu-latest
     steps:
@@ -125,24 +125,26 @@ jobs:
           ./github-ci/version.sh
 
       - name: Export Branch-Hash
-        id: Export_Branch_Hash
+        id: Export_Branch_Version
         run: |          
           ./github-ci/branch_version.sh
 
       - name: Export Version
-        id: Export_Version
+        id: Export_Git_Version
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: |
           ./github-ci/teg_version.sh
 
 # Build image
       - name: Build the Docker image
+        if: ${{ github.event.inputs.deploy == 'yes'}}
         run: |
           echo "--- Build image ---"
           ./github-ci/build.sh
 
 # Push in Docker Hub
       - name: Push image
+        if: ${{ github.event.inputs.deploy == 'yes'}}
         run: |    
           echo "--- Push image ---"
           docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
@@ -159,7 +161,7 @@ jobs:
 
 # --- CD --- Pull and Run ---
   CD:
-    if: ${{ startsWith(github.ref, 'refs/tags/v') }} == true
+    if: ${{ github.event_name == 'push' }} && ${{ github.event_name == 'workflow_dispatch'}}
     needs: Deploy
     runs-on: ubuntu-latest
     steps:
@@ -190,18 +192,19 @@ jobs:
           ./github-ci/version.sh
 
       - name: Export Branch-Hash
-        id: Export_Branch_Hash
+        id: Export_Branch_Version
         run: |          
           ./github-ci/branch_version.sh
 
       - name: Export Version
-        id: Export_Version
+        id: Export_Git_Version
         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: |
           ./github-ci/teg_version.sh
 
 # Pull from Docker Hub
       - name: Pull image
+        if: ${{ github.event.inputs.deploy == 'yes'}}
         run: |    
           echo "--- Pull image ---"
           docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
@@ -209,6 +212,7 @@ jobs:
 
 # Run container
       - name: Run image
+        if: ${{ github.event.inputs.deploy == 'yes'}}
         run: |    
           echo "--- Run_image ---"
           ./github-ci/run.sh
