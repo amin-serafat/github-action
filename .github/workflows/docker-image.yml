@@ -39,7 +39,7 @@ jobs:
           status: starting
           channel: '#test-chat-ops'
           message: |
-            "Pipeline started at $MYDATE."
+            "Pipeline started at ${{ MYDATE }}."
             "Vars: workflow_dispatch=${{ github.event.inputs.deploy }}"
         if: always()
 
