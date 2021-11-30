@@ -20,23 +20,26 @@ on:
         description: 'Deploy? (yes/no).'
 #        default: 'yes'
         required: true
+      tag_version:
+        description: 'Existing TAG?(v0.1/v0.2)'
+        required: false     
 
 jobs:
 
-# Test and build
-  myCI:
-    runs-on: ubuntu-latest
-    steps:
+# # Test and build
+#   myCI:
+#     runs-on: ubuntu-latest
+#     steps:
 
-# Send message in Slack
-      - uses: act10ns/slack@v1
-        with:
-          status: starting
-          channel: '#test-chat-ops'
-          message: |
-            ----  Pipeline started.  ----
-            Vars: workflow_dispatch=${{ github.event.inputs.deploy }}
-        if: always()
+# # Send message in Slack
+#       - uses: act10ns/slack@v1
+#         with:
+#           status: starting
+#           channel: '#test-chat-ops'
+#           message: |
+#             ----  Pipeline started.  ----
+#             Vars: workflow_dispatch=${{ github.event.inputs.deploy }}
+#         if: always()
 
 
 # # Save DockerHub path
@@ -88,8 +91,9 @@ jobs:
 
 # --- Deploy --- Build and push ---
   Deploy:
-    if: ${{ github.event_name == 'push' }} && ${{ github.event_name == 'workflow_dispatch'}}
-    needs: myCI
+    # if: ${{ github.event_name == 'push' }} && ${{ github.event_name == 'workflow_dispatch'}}
+    if: github.event_name == 'workflow_dispatch'
+#    needs: myCI
     runs-on: ubuntu-latest
     steps:
 
@@ -110,6 +114,15 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
           path: github-ci
 
+# TEST git tag
+      - name: Test Git TAG
+        id: TEST_Git_Version
+        run: |
+          git tag
+          echo "View last tag: $(git describe --tags --abbrev=0 | sed 's/[^.0-9]*//g')"
+          git status
+
+
 # Save DockerHub path
       - name: Save DockerHub_Path
         id: Save_DOCKER_HUB
@@ -126,7 +139,7 @@ jobs:
 
       - name: Export Version
         id: Export_Git_Version
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        # if: ${{ startsWith(github.ref, 'refs/tags/v') }}
         run: |
           ./github-ci/tag_version.sh
           echo $(cat /version/tag_version.txt)
