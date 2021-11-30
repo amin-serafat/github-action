@@ -55,16 +55,19 @@ jobs:
       - uses: actions/checkout@v2
         with:
           repository:  amin-serafat/github-action 
-      - run: |
-          git fetch --unshallow --tags
-          echo $?
-          git tag --list
+      # - run: |
+      #     git fetch --unshallow --tags
+      #     echo $?
+      #     git tag --list
 
       - name: View Git-TAG
         id: View_Git-TAG
         run: |          
           git tag
           echo "View last tag: `git describe --tags $(git rev-list --tags --max-count=1)`"
+          echo "Tag for git-checkout: $github.event.inputs.tag_version"
+          git checkout $github.event.inputs.tag_version
+          echo "Branch: `git branch --show-current`  Commit: `git log -1 --pretty=tformat:%h`"
 
 # Clone repository with script
       - uses: actions/checkout@v2
