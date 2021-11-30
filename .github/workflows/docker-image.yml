@@ -50,7 +50,6 @@ jobs:
 
       - name: Switch to TAG Version
         id: Switch_to_TAG_Version
-        if: github.event.inputs.tag_version != ''
         run: |
           echo "Branch name: `git symbolic-ref HEAD 2>/dev/null | cut -d"/" -f 3`  and Last commit: `git rev-parse --short HEAD`"
           TAGS=(`git tag -l`)
