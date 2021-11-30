@@ -60,6 +60,12 @@ jobs:
           echo $?
           git tag --list
 
+      - name: View Git-TAG
+        id: View_Git-TAG
+        run: |          
+          git tag
+          echo "View last tag: `git describe --tags $(git rev-list --tags --max-count=1)`"
+
 # Clone repository with script
       - uses: actions/checkout@v2
         with:
