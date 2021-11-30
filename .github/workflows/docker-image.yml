@@ -34,8 +34,8 @@ jobs:
           status: starting
           channel: '#test-chat-ops'
           message: |
-            "----  Pipeline started.  ----"
-            "Vars: workflow_dispatch=${{ github.event.inputs.deploy }}"
+            ----  Pipeline started.  ----
+            Vars: workflow_dispatch=${{ github.event.inputs.deploy }}
         if: always()
 
 # Clone main repository
@@ -47,187 +47,202 @@ jobs:
           token: ${{ secrets.ACCESS_TOKEN }}
           path: github-ci
 
-# Save DockerHub path
-      - name: Save DockerHub_Path
-        run: |          
-          echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
-          echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
-          ./github-ci/version.sh
 
-      - name: Export Branch-Hash
-        id: Export_Branch_Version
-        run: |          
-          ./github-ci/branch_version.sh
-
-      - name: Export Tag-version
-        id: Export_Git_Version
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+      - name: Switch to TAG Version
+        id: Switch_to_TAG_Version
+        if: github.event.inputs.tag_version != ''
         run: |
-          ./github-ci/teg_version.sh
+          echo "Branch name: `git symbolic-ref HEAD 2>/dev/null | cut -d"/" -f 3`  and Last commit: `git rev-parse --short HEAD`"
+          TAGS=(`git tag -l`)
+          echo "All Tags from var: ${TAGS[*]}"
+          echo "All TAGS: $(git tag --list)"
+          echo "Last TAG: `git describe --tags $(git rev-list --tags --max-count=1)`"
+          echo "Git status: `git status`"
+          echo "Current folder: $(pwd)"
 
-# Test NPM
-      - name: Install dependencies
-        id: Installing_NPM_Dependencies
-        run: |
-          echo "--- INSTALLING DEPENDENCIES ---"
-          npm install --no-audit
+
+
+# # Save DockerHub path
+#       - name: Save DockerHub_Path
+#         run: |          
+#           echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
+#           echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
+#           ./github-ci/version.sh
+
+#       - name: Export Branch-Hash
+#         id: Export_Branch_Version
+#         run: |          
+#           ./github-ci/branch_version.sh
+
+#       - name: Export Tag-version
+#         id: Export_Git_Version
+#         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+#         run: |
+#           ./github-ci/teg_version.sh
+
+# # Test NPM
+#       - name: Install dependencies
+#         id: Installing_NPM_Dependencies
+#         run: |
+#           echo "--- INSTALLING DEPENDENCIES ---"
+#           npm install --no-audit
       
-      - name: Run unit tests
-        id: Unit_Tests
-        run: |
-          echo "--- RUNNING UNIT TESTS ---"
-          npm test 
+#       - name: Run unit tests
+#         id: Unit_Tests
+#         run: |
+#           echo "--- RUNNING UNIT TESTS ---"
+#           npm test 
 
-# Build image
-      - name: Build the Docker image
-        id: Build_Docker_image
-        run: |
-          echo "--- Build image ---"
-          ./github-ci/build.sh
+# # Build image
+#       - name: Build the Docker image
+#         id: Build_Docker_image
+#         run: |
+#           echo "--- Build image ---"
+#           ./github-ci/build.sh
 
-# Send message in Slack
-      - uses: act10ns/slack@v1
-        with:
-          status: ${{ job.status }}
-          steps: ${{ toJson(steps) }}
-          channel: '#test-chat-ops'
-          message: Docker Build Successful
-        if: always()
+# # Send message in Slack
+#       - uses: act10ns/slack@v1
+#         with:
+#           status: ${{ job.status }}
+#           steps: ${{ toJson(steps) }}
+#           channel: '#test-chat-ops'
+#           message: Docker Build Successful
+#         if: always()
 
-# --- Deploy --- Build and push ---
-  Deploy:
-    if: ${{ github.event_name == 'push' }} && ${{ github.event_name == 'workflow_dispatch'}}
-    needs: myCI
-    runs-on: ubuntu-latest
-    steps:
+# # --- Deploy --- Build and push ---
+#   Deploy:
+#     if: ${{ github.event_name == 'push' }} && ${{ github.event_name == 'workflow_dispatch'}}
+#     needs: myCI
+#     runs-on: ubuntu-latest
+#     steps:
 
-# Send message in Slack
-      - uses: act10ns/slack@v1
-        with:
-          status: starting
-          channel: '#test-chat-ops'
-          message: Starting Deploy...
-        if: always()
+# # Send message in Slack
+#       - uses: act10ns/slack@v1
+#         with:
+#           status: starting
+#           channel: '#test-chat-ops'
+#           message: Starting Deploy...
+#         if: always()
 
-# Clone main repository
-      - uses: actions/checkout@v2
-# Clone repository with script
-      - uses: actions/checkout@v2
-        with:
-          repository: amin-serafat/github-ci
-          token: ${{ secrets.ACCESS_TOKEN }}
-          path: github-ci
+# # Clone main repository
+#       - uses: actions/checkout@v2
+# # Clone repository with script
+#       - uses: actions/checkout@v2
+#         with:
+#           repository: amin-serafat/github-ci
+#           token: ${{ secrets.ACCESS_TOKEN }}
+#           path: github-ci
 
-# Save DockerHub path
-      - name: Save DockerHub_Path
-        id: Save_DOCKER_HUB
-        run: |          
-          echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
-          echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
-          ./github-ci/version.sh
+# # Save DockerHub path
+#       - name: Save DockerHub_Path
+#         id: Save_DOCKER_HUB
+#         run: |          
+#           echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
+#           echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
+#           ./github-ci/version.sh
 
-      - name: Export Branch-Hash
-        id: Export_Branch_Version
-        run: |          
-          ./github-ci/branch_version.sh
+#       - name: Export Branch-Hash
+#         id: Export_Branch_Version
+#         run: |          
+#           ./github-ci/branch_version.sh
 
-      - name: Export Version
-        id: Export_Git_Version
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-        run: |
-          ./github-ci/teg_version.sh
+#       - name: Export Version
+#         id: Export_Git_Version
+#         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+#         run: |
+#           ./github-ci/teg_version.sh
 
-# Build image
-      - name: Build the Docker image
-        if: ${{ github.event.inputs.deploy == 'yes'}}
-        id: Build_Docker_image
-        run: |
-          echo "--- Build image ---"
-          ./github-ci/build.sh
+# # Build image
+#       - name: Build the Docker image
+#         if: ${{ github.event.inputs.deploy == 'yes'}}
+#         id: Build_Docker_image
+#         run: |
+#           echo "--- Build image ---"
+#           ./github-ci/build.sh
 
-# Push in Docker Hub
-      - name: Push image
-        if: ${{ github.event.inputs.deploy == 'yes'}}
-        id: Build_Push_image
-        run: |    
-          echo "--- Push image ---"
-          docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
-          ./github-ci/push.sh
+# # Push in Docker Hub
+#       - name: Push image
+#         if: ${{ github.event.inputs.deploy == 'yes'}}
+#         id: Build_Push_image
+#         run: |    
+#           echo "--- Push image ---"
+#           docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
+#           ./github-ci/push.sh
 
-# Send message in Slack
-      - uses: act10ns/slack@v1
-        with:
-          status: ${{ job.status }}
-          steps: ${{ toJson(steps) }}
-          channel: '#test-chat-ops'
-          message: Deploy finished.
-        if: always()
+# # Send message in Slack
+#       - uses: act10ns/slack@v1
+#         with:
+#           status: ${{ job.status }}
+#           steps: ${{ toJson(steps) }}
+#           channel: '#test-chat-ops'
+#           message: Deploy finished.
+#         if: always()
 
-# --- CD --- Pull and Run ---
-  CD:
-    if: ${{ github.event_name == 'push' }} && ${{ github.event_name == 'workflow_dispatch'}}
-    needs: Deploy
-    runs-on: ubuntu-latest
-    steps:
+# # --- CD --- Pull and Run ---
+#   CD:
+#     if: ${{ github.event_name == 'push' }} && ${{ github.event_name == 'workflow_dispatch'}}
+#     needs: Deploy
+#     runs-on: ubuntu-latest
+#     steps:
 
-# Send message in Slack
-      - uses: act10ns/slack@v1
-        with:
-          status: starting
-          channel: '#test-chat-ops'
-          message: Starting Docker Pull and Run...
-        if: always()
+# # Send message in Slack
+#       - uses: act10ns/slack@v1
+#         with:
+#           status: starting
+#           channel: '#test-chat-ops'
+#           message: Starting Docker Pull and Run...
+#         if: always()
 
-# Clone main repository
-      - uses: actions/checkout@v2
-# Clone repository with script
-      - uses: actions/checkout@v2
-        with:
-          repository: amin-serafat/github-ci
-          token: ${{ secrets.ACCESS_TOKEN }}
-          path: github-ci
+# # Clone main repository
+#       - uses: actions/checkout@v2
+# # Clone repository with script
+#       - uses: actions/checkout@v2
+#         with:
+#           repository: amin-serafat/github-ci
+#           token: ${{ secrets.ACCESS_TOKEN }}
+#           path: github-ci
 
-# Save DockerHub path
-      - name: Save DockerHub_Path
-        id: Save_DOCKER_HUB
-        run: |          
-          echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
-          echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
-          ./github-ci/version.sh
+# # Save DockerHub path
+#       - name: Save DockerHub_Path
+#         id: Save_DOCKER_HUB
+#         run: |          
+#           echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
+#           echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
+#           ./github-ci/version.sh
 
-      - name: Export Branch-Hash
-        id: Export_Branch_Version
-        run: |          
-          ./github-ci/branch_version.sh
+#       - name: Export Branch-Hash
+#         id: Export_Branch_Version
+#         run: |          
+#           ./github-ci/branch_version.sh
 
-      - name: Export Version
-        id: Export_Git_Version
-        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-        run: |
-          ./github-ci/teg_version.sh
+#       - name: Export Version
+#         id: Export_Git_Version
+#         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+#         run: |
+#           ./github-ci/teg_version.sh
 
-# Pull from Docker Hub
-      - name: Pull image
-        id: Build_Pull_image
-        if: ${{ github.event.inputs.deploy == 'yes'}}
-        run: |    
-          echo "--- Pull image ---"
-          docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
-          ./github-ci/pull.sh
+# # Pull from Docker Hub
+#       - name: Pull image
+#         id: Build_Pull_image
+#         if: ${{ github.event.inputs.deploy == 'yes'}}
+#         run: |    
+#           echo "--- Pull image ---"
+#           docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" -p "${{ secrets.DOCKERHUB_TOKEN }}"
+#           ./github-ci/pull.sh
 
-# Run container
-      - name: Run image
-        id: Build_Run_image
-        if: ${{ github.event.inputs.deploy == 'yes'}}
-        run: |    
-          echo "--- Run_image ---"
-          ./github-ci/run.sh
+# # Run container
+#       - name: Run image
+#         id: Build_Run_image
+#         if: ${{ github.event.inputs.deploy == 'yes'}}
+#         run: |    
+#           echo "--- Run_image ---"
+#           ./github-ci/run.sh
 
-# Send message in Slack
-      - uses: act10ns/slack@v1
-        with:
-          status: ${{ job.status }}
-          steps: ${{ toJson(steps) }}
-          channel: '#test-chat-ops'
-          message: "==== Finished CD. ====="
-        if: always()
+# # Send message in Slack
+#       - uses: act10ns/slack@v1
+#         with:
+#           status: ${{ job.status }}
+#           steps: ${{ toJson(steps) }}
+#           channel: '#test-chat-ops'
+#           message: "==== Finished CD. ====="
+#         if: always()
