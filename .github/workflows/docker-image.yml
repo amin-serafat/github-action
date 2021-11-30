@@ -58,6 +58,10 @@ jobs:
           echo "Last TAG: `git describe --tags $(git rev-list --tags --max-count=1)`"
           echo "Git status: `git status`"
           echo "Current folder: $(pwd)"
+          echo "------"
+          ./github-ci/teg_version.sh
+          echo $(cat /version/teg_version.txt)
+
 
 
 
