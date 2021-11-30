@@ -66,8 +66,8 @@ jobs:
         run: |          
           git tag
           echo "View last tag: `git describe --tags $(git rev-list --tags --max-count=1)`"
-          echo "Tag for git-checkout: $github.event.inputs.tag_version"
-          git checkout $github.event.inputs.tag_version
+          echo "Tag for git-checkout: ${{ github.event.inputs.tag_version }}"
+          git checkout ${{ github.event.inputs.tag_version }}
           echo "Branch: `git branch --show-current`  Commit: `git log -1 --pretty=tformat:%h`"
 
 # Clone repository with script
