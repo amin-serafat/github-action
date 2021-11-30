@@ -25,31 +25,47 @@ on:
         required: false     
 
 
-jobs:
-  TestGitTag: 
-    runs-on: ubuntu-latest
-    if: github.event_name == 'workflow_dispatch'
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - id: release
-        uses: rymndhng/release-on-push-action@master
-        with:
-          bump_version_scheme: minor
-          tag_prefix: v
-          
-      - name: Check Output Parameters
-        run: |
-          echo "Got tag name ${{ steps.release.outputs.tag_name }}"
-          echo "Got release version ${{ steps.release.outputs.version }}"
-
-
 # jobs:
-
-# # Test and build
-#   myCI:
+#   TestGitTag: 
 #     runs-on: ubuntu-latest
+#     if: github.event_name == 'workflow_dispatch'
+#     env:
+#       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 #     steps:
+#       - id: release
+#         uses: rymndhng/release-on-push-action@master
+#         with:
+#           bump_version_scheme: minor
+#           tag_prefix: v
+          
+#       - name: Check Output Parameters
+#         run: |
+#           echo "Got tag name ${{ steps.release.outputs.tag_name }}"
+#           echo "Got release version ${{ steps.release.outputs.version }}"
+
+
+jobs:
+
+# Test and build
+  myCI:
+    runs-on: ubuntu-latest
+    steps:
+
+# Clone main repository
+      - uses: actions/checkout@v2
+        with:
+          repository:  amin-serafat/github-action 
+      - run: |
+          git fetch --unshallow --tags
+          echo $?
+          git tag --list
+
+# Clone repository with script
+      - uses: actions/checkout@v2
+        with:
+          repository: amin-serafat/github-ci
+          token: ${{ secrets.ACCESS_TOKEN }}
+          path: github-ci
 
 # # Send message in Slack
 #       - uses: act10ns/slack@v1
@@ -62,23 +78,23 @@ jobs:
 #         if: always()
 
 
-# # Save DockerHub path
-#       - name: Save DockerHub_Path
-#         run: |          
-#           echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
-#           echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
-#           ./github-ci/version.sh
+# Save DockerHub path
+      - name: Save DockerHub_Path
+        run: |          
+          echo $DOCKERHUBACCOUNT > DOCKERHUBACCOUNT.txt
+          echo $DOCKERREPOSITORY > DOCKERREPOSITORY.txt
+          ./github-ci/version.sh
 
-#       - name: Export Branch-Hash
-#         id: Export_Branch_Version
-#         run: |          
-#           ./github-ci/branch_version.sh
+      - name: Export Branch-Hash
+        id: Export_Branch_Version
+        run: |          
+          ./github-ci/branch_version.sh
 
-#       - name: Export Tag-version
-#         id: Export_Git_Version
-#         if: ${{ startsWith(github.ref, 'refs/tags/v') }}
-#         run: |
-#           ./github-ci/tag_version.sh
+      - name: Export Tag-version
+        id: Export_Git_Version
+        if: ${{ startsWith(github.ref, 'refs/tags/v') }}
+        run: |
+          ./github-ci/tag_version.sh
 
 # # Test NPM
 #       - name: Install dependencies
